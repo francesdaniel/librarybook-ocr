@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      color: #D92938;
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      color: #999;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #222;
+    }
+    
+    .tab {
+      padding: 12px 24px;
+      background: #1a1a1a;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: 600;
+      color: #999;
+      transition: all 0.2s;
+    }
+    
+    .tab.active {
+      color: #D92938;
+      border-bottom-color: #D92938;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    
+    .card h2 {
+      color: #D92938;
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+    
+    .video-container {
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    
+    video, .preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .video-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #999;
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    button:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-primary {
+      background: #D92938;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background: #999;
+      color: #1a1a1a;
+    }
+    
+    .btn-outline {
+      background: #1a1a1a;
+      color: #D92938;
+      border: 2px solid #D92938;
+    }
+    
+    .btn-outline:hover:not(:disabled) {
+      background: #2a0a09;
+    }
+    
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .actions h3 {
+      font-size: 0.875rem;
+      color: #999;
+      margin-bottom: 8px;
+    }
+    
+    .data-section {
+      margin-bottom: 16px;
+    }
+    
+    .data-section h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #ccc;
+      margin-bottom: 8px;
+    }
+    
+    .data-display {
+      background: #060606;
+      border-radius: 6px;
+      padding: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 0.875rem;
+      white-space: pre-wrap;
+      font-family: monospace;
+      color: #e5e5e5;
+    }
+    
+    .data-display:empty::before {
+      content: 'No data yet';
+      color: #666;
+      font-style: italic;
+      font-family: sans-serif;
+    }
+    
+    .data-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    
+    .data-item:last-child {
+      border-bottom: none;
+    }
+    
+    .data-label {
+      color: #D92938;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    
+    .guide {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    
+    .guide h3 {
+      color: #D92938;
+      margin-bottom: 16px;
+    }
+    
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      font-size: 0.875rem;
+    }
+    
+    .guide-item {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .guide-symbol {
+      color: #D92938;
+      font-weight: bold;
+      min-width: 24px;
+    }
+    
+    .status {
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      margin-bottom: 12px;
+      display: none;
+    }
+    
+    .status.show {
+      display: block;
+    }
+    
+    .status.success {
+      background: #2b5225;
+      color: #eaf8e5;
+    }
+    
+    .status.error {
+      background: #5f2827;
+      color: #fde3db;
+    }
+    
+    .status.info {
+      background: #2e4f5f;
+      color: #d1ecf1;
+    }
+    
+    .upload-zone {
+      border: 2px dashed #D92938;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 16px;
+    }
+    
+    .upload-zone:hover {
+      background: #2a0a09;
+    }
+    
+    .upload-zone.dragover {
+      background: #2a0a09;
+      border-color: #ff3d4f;
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    .symbol-results {
+      background: #060606;
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+    
+    .symbol-category {
+      margin-bottom: 12px;
+    }
+    
+    .symbol-category h4 {
+      color: #D92938;
+      font-size: 0.875rem;
+      margin-bottom: 6px;
+    }
+    
+    .symbol-item {
+      background: #1a1a1a;
+      padding: 8px;
+      border-left: 3px solid #D92938;
+      margin-bottom: 4px;
+      font-size: 0.875rem;
+      color: #e5e5e5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Text Vision Capture</h1>
+      <p>Margin symbols to structured notes</p>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('test')">🔬 Test OCR</button>
+      <button class="tab" onclick="switchTab('capture')">📷 Live Capture</button>
+    </div>
+    
+    <!-- TEST TAB -->
+    <div id="testTab" class="tab-content active">
+      <div class="grid">
+        <div class="card">
+          <h2>Upload Test Image</h2>
+          <div id="testStatus" class="status"></div>
+          
+          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <div style="font-size: 3rem; margin-bottom: 12px;">📸</div>
+            <p style="color: #999; margin-bottom: 8px;">Click to upload or drag & drop</p>
+            <p style="color: #666; font-size: 0.875rem;">Test your annotated book/document images</p>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" onchange="handleFileUpload(event)">
+          
+          <div class="video-container" id="previewContainer" style="display:none;">
+            <img id="previewImage" class="preview-image" alt="Preview">
+          </div>
+          
+          <button class="btn-primary" id="testOcrBtn" onclick="testOCR()" style="display:none;">
+            Analyze Image with OCR
+          </button>
+        </div>
+        
+        <div class="card">
+          <h2>OCR Results</h2>
+          
+          <div class="data-section">
+            <h3>Raw OCR Text</h3>
+            <div id="ocrText" class="data-display"></div>
+          </div>
+          
+          <div id="symbolResults" class="symbol-results" style="display:none;">
+            <h3 style="color: #D92938; margin-bottom: 12px;">Detected Symbols</h3>
+            
+            <div class="symbol-category">
+              <h4>✓ Sentences (X) - <span id="sentenceCount">0</span></h4>
+              <div id="sentenceList"></div>
+            </div>
+            
+            <div class="symbol-category">
+              <h4>✓ Lexicon (—) - <span id="lexiconTestCount">0</span></h4>
+              <div id="lexiconList"></div>
+            </div>
+            
+            <div class="symbol-category">
+              <h4>✓ Working Language (>) - <span id="langCount">0</span></h4>
+              <div id="langList"></div>
+            </div>
+            
+            <div class="symbol-category">
+              <h4>✓ Corollary (Ξ) - <span id="corollaryTestCount">0</span></h4>
+              <div id="corollaryList"></div>
+            </div>
+            
+            <div class="symbol-category">
+              <h4>✓ Paragraphs (X|) - <span id="paragraphCount">0</span></h4>
+              <div id="paragraphList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- CAPTURE TAB -->
+    <div id="captureTab" class="tab-content">
+      <div class="grid">
+        <div class="card">
+          <h2>Camera Feed</h2>
+          <div id="status" class="status"></div>
+          
+          <div class="video-container">
+            <video id="video" autoplay playsinline style="display:none;"></video>
+            <div id="placeholder" class="video-placeholder">Camera inactive</div>
+          </div>
+          <canvas id="canvas" style="display:none;"></canvas>
+          
+          <button id="cameraBtn" class="btn-primary" onclick="toggleCamera()">
+            Start Camera
+          </button>
+          
+          <div id="actions" class="actions" style="display:none; margin-top:16px;">
+            <h3>Capture Actions</h3>
+            <button class="btn-outline" onclick="recordSentence()">X - Record Sentence</button>
+            <button class="btn-outline" onclick="recordLexicon()">— - Record Lexicon</button>
+            <button class="btn-outline" onclick="recordWorkingLanguage()">{'>'} - Working Language</button>
+            <button class="btn-outline" onclick="recordCorollary()">Ξ - Corollary Literature</button>
+            <button class="btn-outline" onclick="recordParagraph()">X| - Record Paragraph</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>Captured Data</h2>
+          
+          <div class="data-section">
+            <h3>Sentences/Paragraphs: <span id="captureCount">0</span></h3>
+            <div id="captureDisplay" class="data-display"></div>
+          </div>
+          
+          <div class="data-section">
+            <h3>Lexicon: <span id="lexiconCount">0</span> words</h3>
+            <div id="lexiconDisplay" class="data-display"></div>
+          </div>
+          
+          <div class="data-section" id="langSection" style="display:none;">
+            <h3>Working Language</h3>
+            <div id="langDisplay" class="data-display"></div>
+          </div>
+          
+          <div class="data-section" id="corollarySection" style="display:none;">
+            <h3>Corollary Literature: <span id="corollaryCount">0</span></h3>
+            <div id="corollaryDisplay" class="data-display"></div>
+          </div>
+          
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:20px;">
+            <button class="btn-primary" onclick="exportMarkdown()" id="exportMd">
+              Export Markdown (.md)
+            </button>
+            <button class="btn-primary" onclick="exportCSV()" id="exportCsv">
+              Export Anki CSV (.csv)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="guide">
+      <h3>Symbol Guide - How to Annotate Your Book</h3>
+      <div class="guide-grid">
+        <div class="guide-item">
+          <span class="guide-symbol">X</span>
+          <span>Write "X" in margin next to sentence</span>
+        </div>
+        <div class="guide-item">
+          <span class="guide-symbol">—</span>
+          <span>Write "—" before underlined word</span>
+        </div>
+        <div class="guide-item">
+          <span class="guide-symbol">{'>'}</span>
+          <span>Write ">" before language designation</span>
+        </div>
+        <div class="guide-item">
+          <span class="guide-symbol">Ξ</span>
+          <span>Write "Ξ" or "Xi" before literature reference</span>
+        </div>
+        <div class="guide-item">
+          <span class="guide-symbol">X|</span>
+          <span>Write "X|" in margin for full paragraph</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let stream = null;
+    let isCapturing = false;
+    let testImageData = null;
+    
+    const data = {
+      captures: [],
+      lexicon: [],
+      workingLanguage: '',
+      corollaryLit: []
+    };
+    
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      if (tab === 'test') {
+        document.querySelectorAll('.tab')[0].classList.add('active');
+        document.getElementById('testTab').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.getElementById('captureTab').classList.add('active');
+      }
+    }
+    
+    // Drag and drop
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+    
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        handleFile(file);
+      }
+    }
+    
+    function handleFile(file) {
+      if (!file.type.startsWith('image/')) {
+        showTestStatus('Please upload an image file', 'error');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        testImageData = e.target.result;
+        document.getElementById('previewImage').src = testImageData;
+        document.getElementById('previewContainer').style.display = 'block';
+        document.getElementById('testOcrBtn').style.display = 'block';
+        showTestStatus('Image loaded. Click "Analyze Image" to test OCR', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+    
+    function testOCR() {
+      if (!testImageData) return;
+      
+      showTestStatus('Processing with Google Vision API...', 'info');
+      
+      google.script.run
+        .withSuccessHandler((result) => {
+          if (result.success) {
+            document.getElementById('ocrText').textContent = result.text;
+            
+            if (!result.hasApiKey) {
+              showTestStatus('⚠️ DEMO MODE: Configure Vision API key for real OCR', 'info');
+            } else {
+              showTestStatus('✓ OCR Complete! Analyzing for symbols...', 'success');
+            }
+            
+            // Detect symbols
+            detectSymbols(result.text);
+          } else {
+            showTestStatus('OCR Error: ' + result.error, 'error');
+            document.getElementById('ocrText').textContent = 'Error: ' + result.error;
+          }
+        })
+        .withFailureHandler((error) => {
+          showTestStatus('Error: ' + error, 'error');
+          document.getElementById('ocrText').textContent = 'Error: ' + error;
+        })
+        .processImage(testImageData);
+    }
+    
+    function detectSymbols(text) {
+      google.script.run
+        .withSuccessHandler((result) => {
+          if (result.success) {
+            displaySymbolResults(result.symbols);
+            showTestStatus(`✓ Found ${result.totalMarkers} markers!`, 'success');
+          }
+        })
+        .detectMarginSymbols(text);
+    }
+    
+    function displaySymbolResults(symbols) {
+      document.getElementById('symbolResults').style.display = 'block';
+      
+      // Sentences
+      document.getElementById('sentenceCount').textContent = symbols.sentences.length;
+      document.getElementById('sentenceList').innerHTML = symbols.sentences.map(s => 
+        `<div class="symbol-item">Line ${s.line}: ${s.text}</div>`
+      ).join('') || '<div style="color:#666;font-size:0.875rem;">None detected</div>';
+      
+      // Lexicon
+      document.getElementById('lexiconTestCount').textContent = symbols.lexicon.length;
+      document.getElementById('lexiconList').innerHTML = symbols.lexicon.map(s => 
+        `<div class="symbol-item">Line ${s.line}: ${s.text}</div>`
+      ).join('') || '<div style="color:#666;font-size:0.875rem;">None detected</div>';
+      
+      // Working Language
+      document.getElementById('langCount').textContent = symbols.workingLanguage ? 1 : 0;
+      document.getElementById('langList').innerHTML = symbols.workingLanguage ? 
+        `<div class="symbol-item">Line ${symbols.workingLanguage.line}: ${symbols.workingLanguage.text}</div>` :
+        '<div style="color:#666;font-size:0.875rem;">None detected</div>';
+      
+      // Corollary
+      document.getElementById('corollaryTestCount').textContent = symbols.corollary.length;
+      document.getElementById('corollaryList').innerHTML = symbols.corollary.map(s => 
+        `<div class="symbol-item">Line ${s.line}: ${s.text}</div>`
+      ).join('') || '<div style="color:#666;font-size:0.875rem;">None detected</div>';
+      
+      // Paragraphs
+      document.getElementById('paragraphCount').textContent = symbols.paragraphs.length;
+      document.getElementById('paragraphList').innerHTML = symbols.paragraphs.map(s => 
+        `<div class="symbol-item">Line ${s.line}: ${s.text}</div>`
+      ).join('') || '<div style="color:#666;font-size:0.875rem;">None detected</div>';
+    }
+    
+    function showTestStatus(message, type = 'info') {
+      const status = document.getElementById('testStatus');
+      status.textContent = message;
+      status.className = 'status show ' + type;
+    }
+    
+    function showStatus(message, type = 'info') {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = 'status show ' + type;
+      setTimeout(() => status.classList.remove('show'), 3000);
+    }
+    
+    async function toggleCamera() {
+      if (!isCapturing) {
+        await startCamera();
+      } else {
+        stopCamera();
+      }
+    }
+    
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1920 } }
+        });
+        
+        const video = document.getElementById('video');
+        const placeholder = document.getElementById('placeholder');
+        const btn = document.getElementById('cameraBtn');
+        const actions = document.getElementById('actions');
+        
+        video.srcObject = stream;
+        video.style.display = 'block';
+        placeholder.style.display = 'none';
+        btn.textContent = 'Stop Camera';
+        btn.className = 'btn-secondary';
+        actions.style.display = 'block';
+        isCapturing = true;
+        
+        showStatus('Camera started', 'success');
+      } catch (err) {
+        showStatus('Camera access denied', 'error');
+      }
+    }
+    
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      
+      const video = document.getElementById('video');
+      const placeholder = document.getElementById('placeholder');
+      const btn = document.getElementById('cameraBtn');
+      const actions = document.getElementById('actions');
+      
+      video.style.display = 'none';
+      placeholder.style.display = 'flex';
+      btn.textContent = 'Start Camera';
+      btn.className = 'btn-primary';
+      actions.style.display = 'none';
+      isCapturing = false;
+      
+      showStatus('Camera stopped', 'info');
+    }
+    
+    async function captureFrame() {
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+      
+      const imageData = canvas.toDataURL('image/png');
+      
+      showStatus('Processing image...', 'info');
+      
+      return new Promise((resolve) => {
+        google.script.run
+          .withSuccessHandler((result) => {
+            if (result.success) {
+              resolve({ text: result.text, imageData, timestamp: Date.now() });
+            } else {
+              showStatus('OCR failed: ' + result.error, 'error');
+              resolve({ text: 'Error processing image', imageData, timestamp: Date.now() });
+            }
+          })
+          .withFailureHandler((error) => {
+            showStatus('Error: ' + error, 'error');
+            resolve({ text: 'Error processing image', imageData, timestamp: Date.now() });
+          })
+          .processImage(imageData);
+      });
+    }
+    
+    async function recordSentence() {
+      const capture = await captureFrame();
+      data.captures.push({ type: 'sentence', ...capture });
+      updateDisplay();
+      showStatus('Sentence recorded', 'success');
+    }
+    
+    async function recordLexicon() {
+      showStatus('Capturing and analyzing for lexicon...', 'info');
+      const capture = await captureFrame();
+      
+      const lines = capture.text.split('\n');
+      const lexiconWords = [];
+      
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.includes('—') || trimmed.startsWith('— ')) {
+          const word = trimmed.replace(/^—\s+/, '').split(/[\s,.:;]/)[0];
+          if (word) {
+            lexiconWords.push({ 
+              word: word, 
+              context: capture.text, 
+              timestamp: capture.timestamp 
+            });
+          }
+        }
+      });
+      
+      if (lexiconWords.length > 0) {
+        data.lexicon.push(...lexiconWords);
+        updateDisplay();
+        showStatus(`✓ Found ${lexiconWords.length} lexicon word(s)`, 'success');
+      } else {
+        showStatus('No lexicon markers (—) detected in image', 'error');
+      }
+    }
+    
+    async function recordWorkingLanguage() {
+      showStatus('Capturing and analyzing for language...', 'info');
+      const capture = await captureFrame();
+      
+      const lines = capture.text.split('\n');
+      let language = null;
+      
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('> ') || trimmed.startsWith('>')) {
+          language = trimmed.replace(/^>\s+/, '');
+        }
+      });
+      
+      if (language) {
+        data.workingLanguage = language;
+        updateDisplay();
+        showStatus(`✓ Working language set: ${language}`, 'success');
+      } else {
+        showStatus('No language marker (>) detected in image', 'error');
+      }
+    }
+    
+    async function recordCorollary() {
+      showStatus('Capturing and analyzing for corollary...', 'info');
+      const capture = await captureFrame();
+      
+      const lines = capture.text.split('\n');
+      const references = [];
+      
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.includes('Ξ') || trimmed.includes('Xi ') || trimmed.includes('E ')) {
+          const ref = trimmed.replace(/Ξ\s+/, '').replace(/Xi\s+/, '').replace(/^E\s+/, '');
+          if (ref) {
+            references.push({ reference: ref, timestamp: capture.timestamp });
+          }
+        }
+      });
+      
+      if (references.length > 0) {
+        data.corollaryLit.push(...references);
+        updateDisplay();
+        showStatus(`✓ Found ${references.length} corollary reference(s)`, 'success');
+      } else {
+        showStatus('No corollary markers (Ξ) detected in image', 'error');
+      }
+    }
+    
+    async function recordParagraph() {
+      const capture = await captureFrame();
+      data.captures.push({ type: 'paragraph', ...capture });
+      updateDisplay();
+      showStatus('Paragraph recorded', 'success');
+    }
+    
+    function updateDisplay() {
+      document.getElementById('captureCount').textContent = data.captures.length;
+      document.getElementById('lexiconCount').textContent = data.lexicon.length;
+      document.getElementById('corollaryCount').textContent = data.corollaryLit.length;
+      
+      const captureDisplay = document.getElementById('captureDisplay');
+      captureDisplay.innerHTML = data.captures.map((cap, i) => 
+        `<div class="data-item"><span class="data-label">${cap.type}:</span>${cap.text.substring(0, 100)}...</div>`
+      ).join('');
+      
+      const lexiconDisplay = document.getElementById('lexiconDisplay');
+      lexiconDisplay.innerHTML = data.lexicon.map(item => 
+        `<div class="data-item"><span class="data-label">${item.word}</span></div>`
+      ).join('');
+      
+      if (data.workingLanguage) {
+        document.getElementById('langSection').style.display = 'block';
+        document.getElementById('langDisplay').textContent = data.workingLanguage;
+      }
+      
+      if (data.corollaryLit.length > 0) {
+        document.getElementById('corollarySection').style.display = 'block';
+        const corollaryDisplay = document.getElementById('corollaryDisplay');
+        corollaryDisplay.innerHTML = data.corollaryLit.map(item => 
+          `<div class="data-item">• ${item.reference}</div>`
+        ).join('');
+      }
+    }
+    
+    function generateMarkdown() {
+      let md = '# Reading Notes\n\n';
+      md += `Generated: ${new Date().toLocaleString()}\n\n`;
+      
+      if (data.workingLanguage) {
+        md += `## Working Language\n${data.workingLanguage}\n\n`;
+      }
+      
+      if (data.captures.length > 0) {
+        md += '## Captured Texts\n\n';
+        data.captures.forEach((cap, i) => {
+          md += `### ${cap.type === 'paragraph' ? 'Paragraph' : 'Sentence'} ${i + 1}\n`;
+          md += `${cap.text}\n\n`;
+        });
+      }
+      
+      if (data.lexicon.length > 0) {
+        md += '## Lexicon\n\n';
+        data.lexicon.forEach(item => {
+          md += `- **${item.word}**: ${item.context}\n`;
+        });
+        md += '\n';
+      }
+      
+      if (data.corollaryLit.length > 0) {
+        md += '## Corollary Literature\n\n';
+        data.corollaryLit.forEach(item => {
+          md += `- ${item.reference}\n`;
+        });
+      }
+      
+      return md;
+    }
+    
+    function generateCSV() {
+      let csv = 'Front,Back,Tags\n';
+      
+      data.lexicon.forEach(item => {
+        const front = item.word.replace(/"/g, '""');
+        const back = item.context.replace(/"/g, '""');
+        csv += `"${front}","${back}","reading,lexicon"\n`;
+      });
+      
+      data.captures.forEach((cap, i) => {
+        const front = `${cap.type} ${i + 1}`.replace(/"/g, '""');
+        const back = cap.text.replace(/"/g, '""');
+        csv += `"${front}","${back}","reading,${cap.type}"\n`;
+      });
+      
+      return csv;
+    }
+    
+    function exportMarkdown() {
+      const md = generateMarkdown();
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `reading-notes-${timestamp}.md`;
+      
+      showStatus('Saving to Google Drive...', 'info');
+      
+      google.script.run
+        .withSuccessHandler((result) => {
+          if (result.success) {
+            showStatus('Saved to Drive: ' + result.fileName, 'success');
+            window.open(result.fileUrl, '_blank');
+          } else {
+            showStatus('Save failed: ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler((error) => {
+          showStatus('Error: ' + error, 'error');
+        })
+        .saveToGoogleDrive(md, filename, 'text/markdown');
+    }
+    
+    function exportCSV() {
+      const csv = generateCSV();
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `anki-cards-${timestamp}.csv`;
+      
+      showStatus('Saving to Google Drive...', 'info');
+      
+      google.script.run
+        .withSuccessHandler((result) => {
+          if (result.success) {
+            showStatus('Saved to Drive: ' + result.fileName, 'success');
+            window.open(result.fileUrl, '_blank');
+          } else {
+            showStatus('Save failed: ' + result.error, 'error');
+          }
+        })
+        .withFailureHandler((error) => {
+          showStatus('Error: ' + error, 'error');
+        })
+        .saveToGoogleDrive(csv, filename, 'text/csv');
+    }
+  </script>
+</body>
+</html>
