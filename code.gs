@@ -14,7 +14,7 @@ function processImage(imageDataUrl) {
     if (!visionApiKey) {
       return {
         success: false,
-        error: 'Vision API key not configured. Please add VISION_API_KEY to Script Properties with value: AIzaSyDdAdxvE7oLb0QBdB_z5_7eU0r1BkYZw1o',
+        error: 'Vision API key not configured. Please add VISION_API_KEY to Script Properties with value: [enter vlaue] ',
         hasApiKey: false
       };
     }
